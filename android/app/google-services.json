@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390073101728",
+    "project_id": "fpga-fota-system",
+    "storage_bucket": "fpga-fota-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390073101728:android:28735e1856262eb97488c5",
+        "android_client_info": {
+          "package_name": "com.fota.uploader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZPxJlFoTkaslWbz-GHXyyaWnS6-TVW-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

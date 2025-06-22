@@ -1,0 +1,37 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "fpga-fota-system",
+          "appId": "1:390073101728:android:28735e1856262eb97488c5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "fpga-fota-system",
+          "configurations": {
+            "android": "1:390073101728:android:28735e1856262eb97488c5",
+            "ios": "1:390073101728:ios:ba5c6c9e4a85ad007488c5",
+            "web": "1:390073101728:web:f7ed4b662fb3308b7488c5"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
