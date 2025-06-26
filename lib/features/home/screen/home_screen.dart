@@ -71,18 +71,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: [
-        'bit',
-        'bin',
-        'hex',
-        'mcs',
-        'rbf',
-        "png",
-        "jpg",
-        "jpeg",
-        "gif",
-        "webp",
-      ],
+      allowedExtensions: ['bit', 'bin', 'hex', 'mcs', 'rbf'],
     );
 
     if (result != null) {
@@ -320,7 +309,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                 Text(
                                   _uploadStatus.isNotEmpty
                                       ? _uploadStatus
-                                      : 'Supported formats: .bit, .bin, .hex, .mcs, .rbf, .png, .jpg, .jpeg, .gif, .webp',
+                                      : 'Supported formats: .bit, .bin, .hex, .mcs, .rbf',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.6),
                                     fontSize: 14,
