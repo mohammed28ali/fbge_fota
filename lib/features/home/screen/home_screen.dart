@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'dart:io';
+
+import 'package:fota_uploader/core/utils/app_colors.dart';
 
 class FPGAFOTAUploaderScreen extends StatefulWidget {
   @override
@@ -18,11 +23,11 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _progressAnimation;
 
+  dynamic _selectedFile;
+  String _selectedFileName = '';
   bool _isUploading = false;
   bool _isCompleted = false;
   double _uploadProgress = 0.0;
-  String? _selectedFileName;
-  File? _selectedFile;
   String _uploadStatus = '';
 
   @override
@@ -66,15 +71,34 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['bit', 'bin', 'hex', 'mcs', 'rbf'],
+      allowedExtensions: [
+        'bit',
+        'bin',
+        'hex',
+        'mcs',
+        'rbf',
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "webp",
+      ],
     );
 
     if (result != null) {
-      setState(() {
-        _selectedFile = File(result.files.single.path!);
-        _selectedFileName = result.files.single.name;
-        _isCompleted = false;
-      });
+      if (kIsWeb) {
+        setState(() {
+          _selectedFile = result.files.single;
+          _selectedFileName = result.files.single.name;
+          _isCompleted = false;
+        });
+      } else {
+        setState(() {
+          _selectedFile = File(result.files.single.path!);
+          _selectedFileName = result.files.single.name;
+          _isCompleted = false;
+        });
+      }
     }
   }
 
@@ -88,13 +112,18 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
     });
 
     try {
-      String fileName =
+      final fileName =
           'fpga_firmware/${DateTime.now().millisecondsSinceEpoch}_$_selectedFileName';
-      Reference storageReference = FirebaseStorage.instance.ref().child(
-        fileName,
-      );
+      final storageRef = FirebaseStorage.instance.ref().child(fileName);
 
-      UploadTask uploadTask = storageReference.putFile(_selectedFile!);
+      Uint8List data;
+      if (kIsWeb) {
+        data = (_selectedFile as PlatformFile).bytes!;
+      } else {
+        data = await (_selectedFile as File).readAsBytes();
+      }
+
+      final uploadTask = storageRef.putData(data);
 
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
         double progress = snapshot.bytesTransferred / snapshot.totalBytes;
@@ -113,7 +142,6 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
         _uploadStatus = 'Upload completed successfully!';
       });
 
-      // Show success animation
       _scaleController.reset();
       _scaleController.forward();
     } catch (e) {
@@ -127,13 +155,17 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0A0A0A),
+      backgroundColor: AppColors.primaryColor,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F0F23)],
+            colors: [
+              AppColors.primaryColor,
+              AppColors.primaryColor,
+              AppColors.primaryColor,
+            ],
           ),
         ),
         child: SafeArea(
@@ -150,16 +182,18 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                       Container(
                         padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Color(0xFF00D4FF).withOpacity(0.1),
+                          color: AppColors.primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Color(0xFF00D4FF).withOpacity(0.3),
+                            color: AppColors.secondaryColor.withValues(
+                              alpha: 0.3,
+                            ),
                             width: 1,
                           ),
                         ),
                         child: Icon(
                           Icons.memory,
-                          color: Color(0xFF00D4FF),
+                          color: AppColors.secondaryColor,
                           size: 28,
                         ),
                       ),
@@ -194,7 +228,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                   Expanded(
                     child: ScaleTransition(
                       scale: _scaleAnimation,
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
                         child: DottedBorder(
                           options: RectDottedBorderOptions(
@@ -206,17 +240,20 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                 ? Color(0xFF00FF88)
                                 : _isUploading
                                 ? Color(0xFFFF6B35)
-                                : Color(0xFF00D4FF),
+                                : AppColors.secondaryColor,
                           ),
                           child: Container(
+                            width: double.infinity,
                             padding: EdgeInsets.all(32),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               color: _isCompleted
-                                  ? Color(0xFF00FF88).withOpacity(0.05)
+                                  ? Color(0xFF00FF88).withValues(alpha: 0.05)
                                   : _isUploading
-                                  ? Color(0xFFFF6B35).withOpacity(0.05)
-                                  : Color(0xFF00D4FF).withOpacity(0.05),
+                                  ? Color(0xFFFF6B35).withValues(alpha: 0.05)
+                                  : AppColors.secondaryColor.withValues(
+                                      alpha: 0.05,
+                                    ),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -228,16 +265,22 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: _isCompleted
-                                        ? Color(0xFF00FF88).withOpacity(0.1)
+                                        ? Color(
+                                            0xFF00FF88,
+                                          ).withValues(alpha: 0.1)
                                         : _isUploading
-                                        ? Color(0xFFFF6B35).withOpacity(0.1)
-                                        : Color(0xFF00D4FF).withOpacity(0.1),
+                                        ? Color(
+                                            0xFFFF6B35,
+                                          ).withValues(alpha: 0.1)
+                                        : AppColors.secondaryColor.withValues(
+                                            alpha: 0.1,
+                                          ),
                                     border: Border.all(
                                       color: _isCompleted
                                           ? Color(0xFF00FF88)
                                           : _isUploading
                                           ? Color(0xFFFF6B35)
-                                          : Color(0xFF00D4FF),
+                                          : AppColors.secondaryColor,
                                       width: 2,
                                     ),
                                   ),
@@ -252,7 +295,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                         ? Color(0xFF00FF88)
                                         : _isUploading
                                         ? Color(0xFFFF6B35)
-                                        : Color(0xFF00D4FF),
+                                        : AppColors.secondaryColor,
                                   ),
                                 ),
                                 SizedBox(height: 24),
@@ -277,7 +320,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                 Text(
                                   _uploadStatus.isNotEmpty
                                       ? _uploadStatus
-                                      : 'Supported formats: .bit, .bin, .hex, .mcs, .rbf',
+                                      : 'Supported formats: .bit, .bin, .hex, .mcs, .rbf, .png, .jpg, .jpeg, .gif, .webp',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.6),
                                     fontSize: 14,
@@ -306,16 +349,20 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                       children: [
                                         Icon(
                                           Icons.file_present,
-                                          color: Color(0xFF00D4FF),
+                                          color: AppColors.secondaryColor,
                                           size: 20,
                                         ),
                                         SizedBox(width: 8),
-                                        Text(
-                                          _selectedFileName!,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Text(
+                                            _selectedFileName!,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 3,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -346,8 +393,8 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                               decoration: BoxDecoration(
                                                 gradient: LinearGradient(
                                                   colors: [
-                                                    Color(0xFF00D4FF),
-                                                    Color(0xFF00FF88),
+                                                    AppColors.secondaryColor,
+                                                    AppColors.secondaryColor,
                                                   ],
                                                 ),
                                                 borderRadius:
@@ -360,7 +407,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                                         Text(
                                           '${(_uploadProgress * 100).toInt()}%',
                                           style: TextStyle(
-                                            color: Color(0xFF00D4FF),
+                                            color: AppColors.primaryColor,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -385,12 +432,12 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                           onPressed: _isUploading ? null : _pickFile,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            foregroundColor: Color(0xFF00D4FF),
+                            foregroundColor: AppColors.secondaryColor,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                               side: BorderSide(
-                                color: Color(0xFF00D4FF),
+                                color: AppColors.secondaryColor,
                                 width: 2,
                               ),
                             ),
@@ -419,7 +466,7 @@ class _FPGAFOTAUploaderScreenState extends State<FPGAFOTAUploaderScreen>
                               ? _uploadFile
                               : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF00D4FF),
+                            backgroundColor: AppColors.secondaryColor,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(

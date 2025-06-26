@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fota_uploader/config/navigation/navigation.dart';
@@ -169,7 +170,9 @@ class _SplashScreenState extends State<SplashScreen>
                             opacity: _logoOpacity.value,
                             child: Container(
                               width: AppSizes.s120.w,
-                              height: AppSizes.s120.h,
+                              height: Foundation.kIsWeb
+                                  ? AppSizes.s500.h
+                                  : AppSizes.s120.h,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.r),
                                 boxShadow: [
@@ -187,8 +190,10 @@ class _SplashScreenState extends State<SplashScreen>
                                     Image.asset(
                                       AppImages.appLogo,
                                       width: AppSizes.s120.w,
-                                      height: AppSizes.s120.h,
-                                      fit: BoxFit.cover,
+                                      height: Foundation.kIsWeb
+                                          ? AppSizes.s500.h
+                                          : AppSizes.s120.h,
+                                      fit: BoxFit.contain,
                                     ),
                                     // Shimmer overlay
                                     Positioned.fill(

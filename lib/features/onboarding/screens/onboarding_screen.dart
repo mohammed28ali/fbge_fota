@@ -195,7 +195,7 @@ class _OnboardPageState extends State<OnboardPage>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F0F23)],
+          colors: [AppColors.primaryColor, AppColors.secondaryColor],
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -224,7 +224,9 @@ class _OnboardPageState extends State<OnboardPage>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Color(0xFF00D4FF).withOpacity(0.3),
+                                color: AppColors.whiteColor.withValues(
+                                  alpha: 0.3,
+                                ),
                                 width: 2,
                               ),
                             ),
@@ -239,10 +241,10 @@ class _OnboardPageState extends State<OnboardPage>
                                     height: 6,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Color(0xFF00D4FF),
+                                      color: AppColors.whiteColor,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Color(0xFF00D4FF),
+                                          color: AppColors.whiteColor,
                                           blurRadius: 4,
                                           spreadRadius: 1,
                                         ),
@@ -267,8 +269,8 @@ class _OnboardPageState extends State<OnboardPage>
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              Color(0xFF00D4FF).withOpacity(0.2),
-                              Color(0xFF00D4FF).withOpacity(0.1),
+                              AppColors.whiteColor.withValues(alpha: 0.2),
+                              AppColors.whiteColor.withValues(alpha: 0.1),
                               Colors.transparent,
                             ],
                           ),
@@ -288,11 +290,14 @@ class _OnboardPageState extends State<OnboardPage>
                       height: 120,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF00D4FF).withOpacity(0.1),
-                        border: Border.all(color: Color(0xFF00D4FF), width: 2),
+                        color: AppColors.whiteColor.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: AppColors.whiteColor,
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFF00D4FF).withOpacity(0.3),
+                            color: AppColors.whiteColor.withValues(alpha: 0.3),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
@@ -301,7 +306,7 @@ class _OnboardPageState extends State<OnboardPage>
                       child: Icon(
                         widget.icon,
                         size: 60,
-                        color: Color(0xFF00D4FF),
+                        color: AppColors.whiteColor,
                       ),
                     ),
                   ],
@@ -326,13 +331,15 @@ class _OnboardPageState extends State<OnboardPage>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color(0xFF00D4FF).withOpacity(0.1),
-                              Color(0xFF00FF88).withOpacity(0.1),
+                              AppColors.whiteColor.withValues(alpha: 0.1),
+                              AppColors.whiteColor.withValues(alpha: 0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Color(0xFF00D4FF).withOpacity(0.3),
+                            color: AppColors.primaryColor.withValues(
+                              alpha: 0.3,
+                            ),
                             width: 1,
                           ),
                         ),
@@ -346,8 +353,8 @@ class _OnboardPageState extends State<OnboardPage>
                               ..shader =
                                   LinearGradient(
                                     colors: [
-                                      Color(0xFF00D4FF),
-                                      Color(0xFF00FF88),
+                                      AppColors.whiteColor,
+                                      AppColors.whiteColor,
                                     ],
                                   ).createShader(
                                     Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
@@ -402,38 +409,6 @@ class _OnboardPageState extends State<OnboardPage>
               ),
 
               const SizedBox(height: 40),
-
-              // Animated dots indicator (optional decorative element)
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fade.value * 0.6,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(3, (index) {
-                        return AnimatedContainer(
-                          duration: Duration(milliseconds: 300 + (index * 100)),
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF00D4FF).withOpacity(0.6),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0xFF00D4FF).withOpacity(0.3),
-                                blurRadius: 4,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                  );
-                },
-              ),
             ],
           ),
         ),
